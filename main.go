@@ -2,30 +2,42 @@ package main
 
 import (
 	// "github.com/go-gl/mathgl/mgl64"
-	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
-	// "github.com/hajimehoshi/ebiten/v2/vector"
+	"image/color"
 	"log"
 	"strconv"
+
+	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"github.com/hajimehoshi/ebiten/v2/vector"
 )
 
-type Game struct{}
+type Game struct {
+	score int
+}
 
 func (g *Game) Update() error {
+	if ebiten.IsKeyPressed(ebiten.KeyArrowLeft) {
+		g.score++
+	}
 	return nil
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	ebitenutil.DebugPrint(screen, strconv.FormatFloat(ebiten.ActualFPS(), 'g', -1, 64))
+
+	var xx, yy = ebiten.CursorPosition()
+
+	// ebitenutil.DebugPrint(screen, strconv.FormatFloat(ebiten.ActualFPS(), 'g', -1, 64))
+	ebitenutil.DebugPrint(screen, strconv.Itoa(g.score))
+	vector.StrokeCircle(screen, float32(xx), float32(yy), 20, 1, color.RGBA{245, 40, 145, 100}, true)
 
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
-	return 320, 240
+	return 1920, 1300
 }
 
 func main() {
-	ebiten.SetWindowSize(640, 480)
+	ebiten.SetWindowSize(1920, 1300)
 	ebiten.SetWindowTitle("HEllo World")
 	if err := ebiten.RunGame(&Game{}); err != nil {
 		log.Fatal(err)
