@@ -3,18 +3,19 @@ package main
 import (
 	// "fmt"
 	// "go/constant"
+	// "image/color"
 	"image/color"
 	"log"
-	"strconv"
+	// "strconv"
 
 	"github.com/go-gl/mathgl/mgl64"
 
 	// "syscall/js"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	// "github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
-	"github.com/hajimehoshi/ebiten/v2/vector"
+	// "github.com/hajimehoshi/ebiten/v2/vector"
 )
 
 const (
@@ -31,10 +32,6 @@ type Game struct {
 	Anchor  mgl64.Vec2
 }
 
-type Points struct {
-	rope mgl64.Vec2
-}
-
 func (g *Game) Update() error {
 	if inpututil.IsKeyJustPressed(ebiten.KeyArrowLeft) {
 		g.sim_Num++
@@ -45,19 +42,18 @@ func (g *Game) Update() error {
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
+	bgColor := color.RGBA{R: 135, G: 206, B: 235, A: 255}
 
-	g.xx, g.yy = ebiten.CursorPosition()
-	act_Point := g.Chain(g.xx, g.yy)
+	// Fill the entire screen with the color
+	screen.Fill(bgColor)
 	// fmt.Println(gg)
 	// fmt.Println(constraint_Dist.Len())
 	// ebitenutil.DebugPrint(screen, strconv.FormatFloat(ebiten.ActualFPS(), 'g', -1, 64))
 	switch g.sim_Num {
 	case 0:
 
-		ebitenutil.DebugPrint(screen, strconv.Itoa(g.sim_Num))
-		vector.StrokeCircle(screen, float32(g.xx), float32(g.yy), 20, 1, color.RGBA{245, 40, 145, 100}, true)
-		vector.FillCircle(screen, float32(g.Anchor[0]), float32(g.Anchor[1]), 5, color.RGBA{245, 100, 145, 100}, true)
-		vector.FillCircle(screen, float32(g.Anchor[0]+act_Point[0]), float32(g.Anchor[1]+act_Point[1]), 5, color.RGBA{245, 100, 145, 100}, true)
+		g.Cmain(screen)
+
 	}
 }
 
