@@ -30,3 +30,6 @@ dist/
 
 # Environment variables
 .env
+# Ignore local compiled binary footprints
+game.wasm
+wasm_exec.js
