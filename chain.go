@@ -15,14 +15,14 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/vector"
 )
 
-func (g *Game) Constraint_dist(point mgl64.Vec2, anchor mgl64.Vec2, distance int) mgl64.Vec2 {
+func Constraint_dist(point mgl64.Vec2, anchor mgl64.Vec2, distance float64) mgl64.Vec2 {
 	// var P mgl64.Vec2
 	// P[0], P[1] = float64(xx), float64(yy)
-	delta := point.Sub(g.Anchor)
+	delta := point.Sub(anchor)
 	constraint_Dist := delta.Normalize()
-	offset_Point := constraint_Dist.Mul(Distance)
+	offset_Point := constraint_Dist.Mul(distance)
 
-	return offset_Point
+	return offset_Point.Add(anchor)
 }
 
 func (g *Game) Cmain(screen *ebiten.Image) {
@@ -31,12 +31,15 @@ func (g *Game) Cmain(screen *ebiten.Image) {
 	var anchor mgl64.Vec2
 	anchor[0] = float64(x)
 	anchor[1] = float64(y)
-	point := mgl64.Vec2{0, 0}
-	act_Point := g.Constraint_dist(point, anchor, Distance)
+
+	nextpos := anchor.Sub(g.Point)
+	if nextpos.Len() > Distance {
+		g.Point = Constraint_dist(g.Point, anchor, Distance)
+	}
 
 	ebitenutil.DebugPrint(screen, strconv.Itoa(g.sim_Num))
 	vector.StrokeCircle(screen, float32(x), float32(y), 50, 1, color.RGBA{245, 40, 145, 100}, true)
-	vector.FillCircle(screen, float32(point[0]), float32(point[1]), 5, color.RGBA{245, 100, 145, 100}, true)
-	vector.FillCircle(screen, float32(point[0]+act_Point[0]), float32(point[1]+act_Point[1]), 5, color.RGBA{245, 100, 145, 100}, true)
+	vector.FillCircle(screen, float32(g.Point[0]), float32(g.Point[1]), 5, color.RGBA{245, 100, 145, 100}, true)
+	// vector.FillCircle(screen, float32(act_Point[0]), float32(act_Point[1]), 5, color.RGBA{245, 100, 145, 100}, true)
 
 }
