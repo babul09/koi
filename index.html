@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Go WebAssembly</title>
+    <!-- Import the Go JavaScript bridge -->
+    <script src="wasm_exec.js"></script>
+    <script>
+        // Initialize the Go runtime
+        const go = new Go();
+        
+        // Stream and instantiate the compiled WebAssembly binary
+        WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject)
+            .then((result) => {
+                // Execute the Go code
+                go.run(result.instance);
+            })
+            .catch((err) => {
+                console.error("Failed to load WASM:", err);
+            });
+    </script>
+</head>
+<body>
+    <h1>Check your Browser Console (F12) to see Go output!</h1>
+</body>
+</html>
+
