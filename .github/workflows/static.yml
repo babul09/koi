@@ -1,0 +1,63 @@
+name: Deploy Ebitengine to GitHub Pages
+
+on:
+  push:
+    branches: [ main ] # Runs automatically when you push to the main branch
+
+# Grant permissions required for deploying to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Prevent concurrent deployments from conflicting
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      # 1. Download your repository code
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # 2. Set up the official Go environment toolchain
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.26.3' # Adjust this to match your local Go version
+
+      # 3. Download Go dependencies
+      - name: Install Dependencies
+        run: go mod download
+
+      # 4. Compile your Ebitengine game into WebAssembly
+      - name: Build WebAssembly
+        run: |
+          env GOOS=js GOARCH=wasm go build -o game.wasm .
+
+      # 5. Extract the official Go JavaScript bridge file
+      - name: Copy Go WASM Bridge
+        run: |
+          cp $(go env GOROOT)/lib/wasm/wasm_exec.js .
+
+      # 6. Configure GitHub Pages settings
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      # 7. Package the static files (index.html, game.wasm, wasm_exec.js)
+      - name: Upload Deployment Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # Upload the entire root directory containing your web files
+          path: '.' 
+
+      # 8. Publish the files live to the internet via GitHub Pages
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
