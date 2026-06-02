@@ -25,11 +25,12 @@ const (
 )
 
 type Game struct {
-	sim_Num int
-	xx      int
-	yy      int
-	Point   mgl64.Vec2
-	Anchor  mgl64.Vec2
+	sim_Num  int
+	xx       int
+	yy       int
+	Point    mgl64.Vec2
+	Anchor   mgl64.Vec2
+	MousePos mgl64.Vec2
 }
 
 func (g *Game) Update() error {
@@ -37,6 +38,15 @@ func (g *Game) Update() error {
 		g.sim_Num++
 	}
 	g.Anchor[0], g.Anchor[1] = float64(ScreenWidth/2), float64(ScreenHeight/2)
+
+	x, y := ebiten.CursorPosition()
+	g.MousePos[0] = float64(x)
+	g.MousePos[1] = float64(y)
+
+	switch g.sim_Num {
+	case 0:
+		Chainupdate(g.MousePos, &g.Point)
+	}
 
 	return nil
 }
