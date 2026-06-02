@@ -47,6 +47,9 @@ func (g *Game) Update() error {
 	switch g.sim_Num {
 	case 0:
 		Constraintupdate(g.MousePos, &g.Point)
+	case 1:
+		Constraintupdate(g.MousePos, &g.Point)
+		g.ChainUpdate()
 	}
 
 	return nil
