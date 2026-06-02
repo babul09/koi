@@ -25,12 +25,13 @@ const (
 )
 
 type Game struct {
-	sim_Num  int
-	xx       int
-	yy       int
-	Point    mgl64.Vec2
-	Anchor   mgl64.Vec2
-	MousePos mgl64.Vec2
+	sim_Num     int
+	xx          int
+	yy          int
+	Point       mgl64.Vec2
+	Anchor      mgl64.Vec2
+	MousePos    mgl64.Vec2
+	chainPoints [30]mgl64.Vec2
 }
 
 func (g *Game) Update() error {
@@ -45,7 +46,7 @@ func (g *Game) Update() error {
 
 	switch g.sim_Num {
 	case 0:
-		Chainupdate(g.MousePos, &g.Point)
+		Constraintupdate(g.MousePos, &g.Point)
 	}
 
 	return nil
@@ -62,7 +63,9 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	switch g.sim_Num {
 	case 0:
 
-		g.Cmain(screen)
+		g.ConstraintDraw(screen)
+	case 1:
+		g.ChainDraw(screen)
 
 	}
 }

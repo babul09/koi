@@ -25,7 +25,7 @@ func Constraint_dist(point mgl64.Vec2, anchor mgl64.Vec2, distance float64) mgl6
 	return offset_Point.Add(anchor)
 }
 
-func Chainupdate(anchor mgl64.Vec2, point *mgl64.Vec2) {
+func Constraintupdate(anchor mgl64.Vec2, point *mgl64.Vec2) {
 	nextpos := anchor.Sub(*point)
 	if nextpos.Len() > Distance {
 		*point = Constraint_dist(*point, anchor, Distance)
@@ -33,7 +33,7 @@ func Chainupdate(anchor mgl64.Vec2, point *mgl64.Vec2) {
 
 }
 
-func (g *Game) Cmain(screen *ebiten.Image) {
+func (g *Game) ConstraintDraw(screen *ebiten.Image) {
 
 	// x, y := ebiten.CursorPosition()
 	// var anchor mgl64.Vec2
