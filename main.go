@@ -36,6 +36,9 @@ type Game struct {
 
 func (g *Game) Update() error {
 	if inpututil.IsKeyJustPressed(ebiten.KeyArrowLeft) {
+		g.sim_Num--
+	}
+	if inpututil.IsKeyJustPressed(ebiten.KeyArrowRight) {
 		g.sim_Num++
 	}
 	g.Anchor[0], g.Anchor[1] = float64(ScreenWidth/2), float64(ScreenHeight/2)
@@ -50,6 +53,10 @@ func (g *Game) Update() error {
 	case 1:
 		Constraintupdate(g.MousePos, &g.Point)
 		g.ChainUpdate()
+	case 2:
+
+		Constraintupdate(g.MousePos, &g.Point)
+		g.FishUpdate()
 	}
 
 	return nil
@@ -69,6 +76,8 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		g.ConstraintDraw(screen)
 	case 1:
 		g.ChainDraw(screen)
+	case 2:
+		g.FishDraw(screen)
 
 	}
 }
