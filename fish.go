@@ -28,17 +28,20 @@ var FishWidth = []float64{45.33, 54.00, 56.00, 55.33, 51.33, 42.67, 34.00, 25.33
 
 var leftBody = make([]mgl64.Vec2, FishSegments)
 var rightBody = make([]mgl64.Vec2, FishSegments)
+var Front mgl64.Vec2
 
 func (g *Game) FishUpdate() {
 	g.chainPoints[0] = g.MousePos
+
 	for i := 1; i < FishSegments; i++ {
 		g.chainPoints[i] = Constraint_dist(g.chainPoints[i], g.chainPoints[i-1], FishSegmentLength)
 	}
 	for i := 0; i < FishSegments; i++ {
 		var dir mgl64.Vec2
 
+		Front = g.chainPoints[0].Add(dir.Mul(FishWidth[0]))
 		if i == 0 {
-			delta := g.chainPoints[0].Sub(g.MousePos)
+			delta := g.chainPoints[1].Sub(g.chainPoints[0])
 			if delta.Len() > 0.0001 {
 				dir = delta.Normalize()
 			}
@@ -53,7 +56,7 @@ func (g *Game) FishUpdate() {
 			-dir[1],
 			dir[0],
 		}
-
+		Front = g.chainPoints[0].Add(dir.Mul(FishWidth[0]))
 		leftBody[i] = g.chainPoints[i].Add(
 			normal.Mul(FishWidth[i]),
 		)
@@ -95,6 +98,15 @@ func (g *Game) FishDraw(screen *ebiten.Image) {
 		)
 
 	}
+
+	vector.FillCircle(
+		screen,
+		float32(Front[0]),
+		float32(Front[1]),
+		4,
+		color.RGBA{0, 255, 0, 255},
+		true,
+	)
 
 	for i := 1; i < FishSegments; i++ {
 		vector.StrokeLine(

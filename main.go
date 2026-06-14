@@ -63,7 +63,7 @@ func (g *Game) Update() error {
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	bgColor := color.RGBA{R: 135, G: 206, B: 235, A: 255}
+	bgColor := color.RGBA{R: 54, G: 70, B: 82, A: 1}
 
 	// Fill the entire screen with the color
 	screen.Fill(bgColor)
