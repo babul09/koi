@@ -12,6 +12,9 @@ func installBrowserBridge(g *Game) {
 	configCallback = js.FuncOf(func(this js.Value, args []js.Value) any {
 		if len(args) > 0 {
 			if c, err := decodeMotionConfig(args[0].String()); err == nil {
+				if c.Mode != g.Config.Mode {
+					g.ResetSimulation()
+				}
 				g.Config = c
 			}
 		}

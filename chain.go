@@ -1,12 +1,22 @@
 package main
 
 import (
+	"image/color"
+
+	"github.com/go-gl/mathgl/mgl64"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/vector"
-	"image/color"
 )
 
 func (g *Game) ChainUpdate() {
+	if !g.chainInitialized || g.layoutSegments != g.Config.Segments || g.layoutSegmentLength != g.Config.SegmentLength {
+		for i := 0; i < g.Config.Segments; i++ {
+			g.chainPoints[i] = g.MousePos.Sub(mgl64.Vec2{float64(i) * g.Config.SegmentLength, 0})
+		}
+		g.chainInitialized = true
+		g.layoutSegments = g.Config.Segments
+		g.layoutSegmentLength = g.Config.SegmentLength
+	}
 	g.chainPoints[0] = g.MousePos
 	for i := 1; i < g.Config.Segments; i++ {
 		g.chainPoints[i] = Constraint_dist(g.chainPoints[i], g.chainPoints[i-1], g.Config.SegmentLength)

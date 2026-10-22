@@ -19,7 +19,17 @@ type Game struct {
 	Config                  MotionConfig
 	tick                    float64
 	headInitialized         bool
+	chainInitialized        bool
+	mouseInitialized        bool
 	heading                 float64
+	layoutSegments          int
+	layoutSegmentLength     float64
+	chainAngles             [30]float64
+	lizardLegInitialized    [4]bool
+	lizardShoulders         [4]mgl64.Vec2
+	lizardElbows            [4]mgl64.Vec2
+	lizardFeet              [4]mgl64.Vec2
+	lizardFootTargets       [4]mgl64.Vec2
 	Point, Anchor, MousePos mgl64.Vec2
 	chainPoints             [30]mgl64.Vec2
 }
@@ -27,7 +37,16 @@ type Game struct {
 func (g *Game) ResetSimulation() {
 	g.tick = 0
 	g.headInitialized = false
+	g.chainInitialized = false
 	g.heading = 0
+	g.layoutSegments = 0
+	g.layoutSegmentLength = 0
+	g.chainAngles = [30]float64{}
+	g.lizardLegInitialized = [4]bool{}
+	g.lizardShoulders = [4]mgl64.Vec2{}
+	g.lizardElbows = [4]mgl64.Vec2{}
+	g.lizardFeet = [4]mgl64.Vec2{}
+	g.lizardFootTargets = [4]mgl64.Vec2{}
 	g.chainPoints = [30]mgl64.Vec2{}
 	g.Point = mgl64.Vec2{}
 }
@@ -39,6 +58,11 @@ func (g *Game) Update() error {
 	x, y := ebiten.CursorPosition()
 	if x >= 0 && y >= 0 && x < ScreenWidth && y < ScreenHeight {
 		g.MousePos[0], g.MousePos[1] = float64(x), float64(y)
+		g.mouseInitialized = true
+	}
+	if !g.mouseInitialized {
+		g.MousePos = mgl64.Vec2{ScreenWidth / 2, ScreenHeight / 2}
+		g.mouseInitialized = true
 	}
 	if !g.Config.Paused {
 		g.tick += 1.0 / 60
