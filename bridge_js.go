@@ -5,6 +5,7 @@ package main
 import "syscall/js"
 
 var configCallback js.Func
+var resetCallback js.Func
 
 func installBrowserBridge(g *Game) {
 	api := js.Global().Get("Object").New()
@@ -17,5 +18,10 @@ func installBrowserBridge(g *Game) {
 		return nil
 	})
 	api.Set("setConfig", configCallback)
+	resetCallback = js.FuncOf(func(this js.Value, args []js.Value) any {
+		g.ResetSimulation()
+		return nil
+	})
+	api.Set("resetSimulation", resetCallback)
 	js.Global().Set("motionDNA", api)
 }

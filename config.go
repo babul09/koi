@@ -9,11 +9,12 @@ type MotionConfig struct {
 	BodyWidth     float64 `json:"bodyWidth"`
 	Amplitude     float64 `json:"amplitude"`
 	Frequency     float64 `json:"frequency"`
+	Speed         float64 `json:"speed"`
 	Paused        bool    `json:"paused"`
 }
 
 func defaultMotionConfig() MotionConfig {
-	return MotionConfig{Mode: "fish", Segments: 10, SegmentLength: 24, BodyWidth: 1, Amplitude: 18, Frequency: 1.2}
+	return MotionConfig{Mode: "fish", Segments: 12, SegmentLength: 28, BodyWidth: 1, Amplitude: 18, Frequency: 1.2, Speed: 260}
 }
 
 func decodeMotionConfig(raw string) (MotionConfig, error) {
@@ -21,20 +22,20 @@ func decodeMotionConfig(raw string) (MotionConfig, error) {
 	if err := json.Unmarshal([]byte(raw), &c); err != nil {
 		return c, err
 	}
-	if c.Mode != "constraint" && c.Mode != "chain" && c.Mode != "fish" {
+	if c.Mode != "constraint" && c.Mode != "chain" && c.Mode != "fish" && c.Mode != "snake" && c.Mode != "lizard" {
 		c.Mode = "fish"
 	}
-	if c.Segments < 2 {
-		c.Segments = 2
+	if c.Segments < 6 {
+		c.Segments = 6
 	}
-	if c.Segments > 30 {
-		c.Segments = 30
+	if c.Segments > 24 {
+		c.Segments = 24
 	}
-	if c.SegmentLength < 5 {
-		c.SegmentLength = 5
+	if c.SegmentLength < 12 {
+		c.SegmentLength = 12
 	}
-	if c.SegmentLength > 60 {
-		c.SegmentLength = 60
+	if c.SegmentLength > 40 {
+		c.SegmentLength = 40
 	}
 	if c.BodyWidth < .3 {
 		c.BodyWidth = .3
@@ -53,6 +54,12 @@ func decodeMotionConfig(raw string) (MotionConfig, error) {
 	}
 	if c.Frequency > 4 {
 		c.Frequency = 4
+	}
+	if c.Speed < 40 {
+		c.Speed = 40
+	}
+	if c.Speed > 720 {
+		c.Speed = 720
 	}
 	return c, nil
 }

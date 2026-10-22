@@ -18,8 +18,18 @@ const (
 type Game struct {
 	Config                  MotionConfig
 	tick                    float64
+	headInitialized         bool
+	heading                 float64
 	Point, Anchor, MousePos mgl64.Vec2
 	chainPoints             [30]mgl64.Vec2
+}
+
+func (g *Game) ResetSimulation() {
+	g.tick = 0
+	g.headInitialized = false
+	g.heading = 0
+	g.chainPoints = [30]mgl64.Vec2{}
+	g.Point = mgl64.Vec2{}
 }
 
 func (g *Game) Update() error {
@@ -27,17 +37,19 @@ func (g *Game) Update() error {
 		g.Config = defaultMotionConfig()
 	}
 	x, y := ebiten.CursorPosition()
-	g.MousePos[0], g.MousePos[1] = float64(x), float64(y)
+	if x >= 0 && y >= 0 && x < ScreenWidth && y < ScreenHeight {
+		g.MousePos[0], g.MousePos[1] = float64(x), float64(y)
+	}
 	if !g.Config.Paused {
 		g.tick += 1.0 / 60
-	}
-	switch g.Config.Mode {
-	case "constraint":
-		Constraintupdate(g.MousePos, &g.Point)
-	case "chain":
-		g.ChainUpdate()
-	case "fish":
-		g.FishUpdate()
+		switch g.Config.Mode {
+		case "constraint":
+			Constraintupdate(g.MousePos, &g.Point)
+		case "chain":
+			g.ChainUpdate()
+		case "fish", "snake", "lizard":
+			g.FishUpdate()
+		}
 	}
 	return nil
 }
@@ -55,8 +67,12 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		g.ConstraintDraw(screen)
 	case "chain":
 		g.ChainDraw(screen)
+	case "snake":
+		g.AnimalDraw(screen, "snake")
+	case "lizard":
+		g.AnimalDraw(screen, "lizard")
 	default:
-		g.FishDraw(screen)
+		g.AnimalDraw(screen, "fish")
 	}
 }
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) { return ScreenWidth, ScreenHeight }
