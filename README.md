@@ -2,6 +2,23 @@
 
 Motion DNA is a small browser based procedural animation lab built with Go, Ebiten, and WebAssembly. Edit the controls while the simulation runs, move the pointer inside the stage to lead the creature, and save or export configurations from the right rail.
 
+## Screenshots
+
+The screenshots below show the Motion DNA workspace and its available creature rigs.
+
+![Motion DNA full workspace](motion-dna-full-page.png)
+
+*The full workspace combines the rig selector, live animation stage, controls, and preset/export tools.*
+
+| Fish rig | Snake rig | Lizard rig |
+| --- | --- | --- |
+| ![Fish rig](motion-dna-fish.png) | ![Snake rig](motion-dna-snake.png) | ![Lizard rig](motion-dna-lizard.png) |
+| A streamlined fish-style chain following the pointer. | A flexible snake-style chain with flowing motion. | A segmented lizard-style rig with articulated movement. |
+
+![Motion DNA controls](motion-dna-controls.png)
+
+*The controls view highlights the live parameters used to tune spine resolution, segment length, mass, follow speed, and flex.*
+
 ## Run locally on Windows
 
 With Go installed, run this from PowerShell:
