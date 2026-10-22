@@ -55,12 +55,12 @@ func (g *Game) Update() error {
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	screen.Fill(color.RGBA{17, 29, 39, 255})
+	screen.Fill(color.RGBA{11, 15, 11, 255})
 	for x := 0; x < ScreenWidth; x += 40 {
-		vector.StrokeLine(screen, float32(x), 0, float32(x), ScreenHeight, 1, color.RGBA{42, 58, 66, 110}, true)
+		vector.StrokeLine(screen, float32(x), 0, float32(x), ScreenHeight, 1, color.RGBA{33, 39, 30, 80}, true)
 	}
 	for y := 0; y < ScreenHeight; y += 40 {
-		vector.StrokeLine(screen, 0, float32(y), ScreenWidth, float32(y), 1, color.RGBA{42, 58, 66, 110}, true)
+		vector.StrokeLine(screen, 0, float32(y), ScreenWidth, float32(y), 1, color.RGBA{33, 39, 30, 80}, true)
 	}
 	switch g.Config.Mode {
 	case "constraint":

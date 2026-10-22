@@ -144,9 +144,9 @@ func (g *Game) AnimalDraw(screen *ebiten.Image, kind string) {
 		fin = color.RGBA{187, 202, 126, 255}
 		ink = color.RGBA{37, 72, 54, 255}
 	default:
-		body = color.RGBA{54, 145, 176, 255}
-		fin = color.RGBA{111, 204, 211, 255}
-		ink = color.RGBA{25, 73, 94, 255}
+		body = color.RGBA{90, 126, 65, 255}
+		fin = color.RGBA{166, 205, 98, 255}
+		ink = color.RGBA{36, 61, 32, 255}
 	}
 	// Fins and limbs sit behind the torso so the spine reads as a single animal.
 	if kind == "fish" {
@@ -233,5 +233,21 @@ func (g *Game) AnimalDraw(screen *ebiten.Image, kind string) {
 	if kind == "fish" {
 		gill := g.chainPoints[2]
 		vector.StrokeLine(screen, float32(gill[0]), float32(gill[1]), float32(gill[0]+normal[0]*5), float32(gill[1]+normal[1]*5), 1.5, ink, true)
+	}
+	// Spine markers keep the live constraint rig visible through the silhouette.
+	spineColor := color.RGBA{199, 245, 107, 225}
+	for i := 0; i < n; i++ {
+		if i > 0 {
+			start, end := g.chainPoints[i-1], g.chainPoints[i]
+			steps := int(end.Sub(start).Len() / 8)
+			for step := 0; step <= steps; step += 2 {
+				t := float64(step) / float64(max(steps, 1))
+				point := start.Add(end.Sub(start).Mul(t))
+				vector.FillCircle(screen, float32(point[0]), float32(point[1]), 1.5, color.RGBA{199, 245, 107, 145}, true)
+			}
+		}
+		radius := float32(2.4)
+		if i == 0 || i == n-1 { radius = 3.5 }
+		vector.FillCircle(screen, float32(g.chainPoints[i][0]), float32(g.chainPoints[i][1]), radius, spineColor, true)
 	}
 }
