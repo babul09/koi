@@ -1,9 +1,9 @@
 package main
 
 import (
-	"image/color"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/vector"
+	"image/color"
 )
 
 func (g *Game) ChainUpdate() {
