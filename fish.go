@@ -1,137 +1,45 @@
 package main
 
 import (
-	// "fmt"
-	// "go/constant"
-	// "fmt"
 	"image/color"
-	// "path"
-	"strconv"
-
-	// "github.com/go-gl/mathgl/mgl64"
-
-	// "syscall/js"
-
-	// "github.com/go-gl/mathgl/mgl64"
+	"math"
 	"github.com/go-gl/mathgl/mgl64"
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/vector"
 )
 
-const (
-	FishSegments      = 10
-	FishSegmentLength = 30
-)
-
-var FishWidth = []float64{45.33, 54.00, 56.00, 55.33, 51.33, 42.67, 34.00, 25.33, 21.33, 12.67}
-
-var leftBody = make([]mgl64.Vec2, FishSegments)
-var rightBody = make([]mgl64.Vec2, FishSegments)
 var Front mgl64.Vec2
 
 func (g *Game) FishUpdate() {
+	n := g.Config.Segments
 	g.chainPoints[0] = g.MousePos
-
-	for i := 1; i < FishSegments; i++ {
-		g.chainPoints[i] = Constraint_dist(g.chainPoints[i], g.chainPoints[i-1], FishSegmentLength)
+	for i := 1; i < n; i++ {
+		base := Constraint_dist(g.chainPoints[i], g.chainPoints[i-1], g.Config.SegmentLength)
+		delta := base.Sub(g.chainPoints[i-1]); phase := g.tick*g.Config.Frequency*2*math.Pi-float64(i)*.48
+		base[1] += math.Sin(phase)*g.Config.Amplitude*float64(i)/float64(n)
+		if delta.Len() > 0.001 { base[1] += math.Sin(phase)*g.Config.Amplitude*.16 }
+		g.chainPoints[i] = base
 	}
-	for i := 0; i < FishSegments; i++ {
-		var dir mgl64.Vec2
-
-		Front = g.chainPoints[0].Add(dir.Mul(FishWidth[0]))
-		if i == 0 {
-			delta := g.chainPoints[1].Sub(g.chainPoints[0])
-			if delta.Len() > 0.0001 {
-				dir = delta.Normalize()
-			}
-		} else {
-			delta := g.chainPoints[i].Sub(g.chainPoints[i-1])
-			if delta.Len() > 0.0001 {
-				dir = delta.Normalize()
-			}
-		}
-
-		normal := mgl64.Vec2{
-			-dir[1],
-			dir[0],
-		}
-		Front = g.chainPoints[0].Add(dir.Mul(FishWidth[0]))
-		leftBody[i] = g.chainPoints[i].Add(
-			normal.Mul(FishWidth[i]),
-		)
-
-		rightBody[i] = g.chainPoints[i].Sub(
-			normal.Mul(FishWidth[i]),
-		)
-	}
+	for i := 0; i < n; i++ { if i == 0 { Front = g.chainPoints[i] } }
 }
 
 func (g *Game) FishDraw(screen *ebiten.Image) {
-
-	ebitenutil.DebugPrint(screen, strconv.Itoa(g.sim_Num))
-
-	// fmt.Println(fishObject.bodyWidth)
-	for i := 0; i < FishSegments; i++ {
-		// vector.StrokeLine(screen, float32(g.chainPoints[i-1][0]), float32(g.chainPoints[i-1][1]), float32(g.chainPoints[i][0]), float32(g.chainPoints[i][1]), 3, color.Black, true)
-
-		vector.FillCircle(screen, float32(g.chainPoints[i][0]), float32(g.chainPoints[i][1]), float32(FishWidth[i]), color.RGBA{255, 255, 255, 20}, true)
+	n := g.Config.Segments
+	left := make([]mgl64.Vec2, n); right := make([]mgl64.Vec2, n)
+	for i := 0; i < n; i++ {
+		var dir mgl64.Vec2
+		if i+1 < n { dir = g.chainPoints[i+1].Sub(g.chainPoints[i]) } else if i > 0 { dir = g.chainPoints[i].Sub(g.chainPoints[i-1]) }
+		if dir.Len() > .001 { dir = dir.Normalize() }
+		normal := mgl64.Vec2{-dir[1], dir[0]}
+		width := (42*(1-float64(i)/float64(n)) + 5) * g.Config.BodyWidth
+		left[i] = g.chainPoints[i].Add(normal.Mul(width)); right[i] = g.chainPoints[i].Sub(normal.Mul(width))
 	}
-
-	for i := 0; i < FishSegments; i++ {
-		vector.FillCircle(
-			screen,
-			float32(leftBody[i][0]),
-			float32(leftBody[i][1]),
-			4,
-			color.RGBA{255, 0, 0, 255},
-			true,
-		)
-
-		vector.FillCircle(
-			screen,
-			float32(rightBody[i][0]),
-			float32(rightBody[i][1]),
-			4,
-			color.RGBA{0, 255, 0, 255},
-			true,
-		)
-
+	for i := 1; i < n; i++ {
+		vector.StrokeLine(screen,float32(left[i-1][0]),float32(left[i-1][1]),float32(left[i][0]),float32(left[i][1]),2,color.RGBA{246,120,95,255},true)
+		vector.StrokeLine(screen,float32(right[i-1][0]),float32(right[i-1][1]),float32(right[i][0]),float32(right[i][1]),2,color.RGBA{246,120,95,255},true)
+		vector.StrokeLine(screen,float32(left[i-1][0]),float32(left[i-1][1]),float32(right[i-1][0]),float32(right[i-1][1]),1,color.RGBA{246,120,95,140},true)
 	}
-
-	vector.FillCircle(
-		screen,
-		float32(Front[0]),
-		float32(Front[1]),
-		4,
-		color.RGBA{0, 255, 0, 255},
-		true,
-	)
-
-	for i := 1; i < FishSegments; i++ {
-		vector.StrokeLine(
-			screen,
-			float32(leftBody[i-1][0]),
-			float32(leftBody[i-1][1]),
-			float32(leftBody[i][0]),
-			float32(leftBody[i][1]),
-			float32(2),
-			color.Black,
-			true,
-		)
-		vector.StrokeLine(
-			screen,
-			float32(rightBody[i-1][0]),
-			float32(rightBody[i-1][1]),
-			float32(rightBody[i][0]),
-			float32(rightBody[i][1]),
-			float32(2),
-			color.Black,
-			true,
-		)
-
-	}
-
-	// vector.FillCircle(screen, float32(g.MousePos[0]), float32(g.MousePos[1]), 3, color.RGBA{255, 255, 255, 255}, true)
-
+	vector.StrokeLine(screen,float32(left[n-1][0]),float32(left[n-1][1]),float32(right[n-1][0]),float32(right[n-1][1]),1,color.RGBA{246,120,95,140},true)
+	for i := 0; i < n; i++ { vector.FillCircle(screen,float32(g.chainPoints[i][0]),float32(g.chainPoints[i][1]),2,color.RGBA{247,198,132,210},true) }
+	vector.FillCircle(screen,float32(g.MousePos[0]),float32(g.MousePos[1]),4,color.RGBA{246,120,95,255},true)
 }
